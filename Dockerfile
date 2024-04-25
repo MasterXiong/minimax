@@ -27,6 +27,7 @@ RUN apt-get update -q \
     libglfw3 \
     xserver-xorg-dev \
     python3.9 \
+    python3-pip \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
 
@@ -34,9 +35,10 @@ RUN apt-get update -q \
 #     && chmod +x /usr/local/bin/patchelf
 
 # ENV LANG C.UTF-8
+WORKDIR /user
 
 # install jax
-RUN pip install --upgrade "jax[cuda11_pip]" -f https://storage.googleapis.com/jax-releases/jax_cuda_releases.html
+RUN pip3 install --upgrade "jax[cuda11_pip]" -f https://storage.googleapis.com/jax-releases/jax_cuda_releases.html
 # RUN pip install minimax-lib
 
 # Copy the code in the very end
