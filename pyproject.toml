@@ -23,7 +23,9 @@ dependencies = [
   "chex>=0.1.83",
   "wandb>=0.13",
   "ipython>=7.34.0",
-  "GitPython>=3.1.29"
+  "GitPython>=3.1.29", 
+  "tensorflow_probability", 
+  "tqdm"
 ]
 
 [tool.hatchling.scripts]

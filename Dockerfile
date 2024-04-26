@@ -1,4 +1,4 @@
-# docker build -f Dockerfile -t minimax .
+# docker build -f Dockerfile --build-arg USER_ID=$UID -t minimax .
 # Base Image
 FROM nvidia/cuda:11.6.2-cudnn8-devel-ubuntu20.04
 
@@ -26,32 +26,32 @@ RUN apt-get update -q \
     xpra \
     libglfw3 \
     xserver-xorg-dev \
-    python3.9 \
-    python3-pip \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
 
-# RUN curl -o /usr/local/bin/patchelf https://s3-us-west-2.amazonaws.com/openai-sci-artifacts/manual-builds/patchelf_0.9_amd64.elf \
-#     && chmod +x /usr/local/bin/patchelf
-
-# ENV LANG C.UTF-8
+# Install conda 
 WORKDIR /user
+RUN curl -LO http://repo.continuum.io/miniconda/Miniconda3-latest-Linux-x86_64.sh \
+    && bash Miniconda3-latest-Linux-x86_64.sh -p /user/miniconda -b
+RUN rm /user/Miniconda3-latest-Linux-x86_64.sh
+ENV PATH=/user/miniconda/bin:${PATH}
 
-# install jax
-RUN pip3 install --upgrade "jax[cuda11_pip]" -f https://storage.googleapis.com/jax-releases/jax_cuda_releases.html
-# RUN pip install minimax-lib
+# Create the conda env. Don't change the name as the alias in .bashrc is hardcoded.
+RUN conda create -n docker_env python=3.9
+# Make python default to env python
+ENV PATH=/user/miniconda/envs/docker_env/bin:${PATH}
 
 # Copy the code in the very end
-COPY src /user/minimax/src
-# COPY setup.py /user/metamorph/
-# RUN /bin/bash -c ". activate docker_env; cd metamorph; pip install -e ."
+COPY . /user/minimax
+WORKDIR /user/minimax
+RUN /bin/bash -c ". activate docker_env; python3 -m pip install --upgrade pip; python3 -m pip install -e ."
 
-# RUN conda init
-# RUN /bin/bash -c ". activate docker_env"
+# RUN python3 -m pip install --upgrade "jax[cuda11_pip]" -f https://storage.googleapis.com/jax-releases/jax_cuda_releases.html
 
-# Change permissions
-RUN useradd --shell /bin/bash -u `id -u` -o -d /user user
-# RUN chown -R user /user/miniconda/envs/docker_env/lib/python3.8/site-packages/mujoco_py/
+# add new user
+ARG USER_ID
+RUN useradd --shell /bin/bash -u ${USER_ID} -o -d /user user
+USER user
 
 # Set python ENV variables
-# ENV PYTHONUNBUFFERED=1
+ENV PYTHONUNBUFFERED=1
