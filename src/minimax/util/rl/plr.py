@@ -197,6 +197,9 @@ class PLRManager:
 		else:
 			sample_fn = self._sample_replay_levels
 
+		# levels are env state
+		# level_idxs is the index of the levels sampled from the plr buffer
+		# so it is -1 if sampling randomly
 		levels, level_idxs, next_plr_buffer = jax.lax.cond(
 			is_replay,
 			partial(sample_fn, n=n),

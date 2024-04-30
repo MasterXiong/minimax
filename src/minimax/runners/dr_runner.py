@@ -216,6 +216,7 @@ class DRRunner:
 		 info, 
 		 extra) = self.benv.step(jnp.array(vrngs), state, action, extra)
 
+		# next_start_state: the starting state of the next state's episode
 		next_start_state = jax.vmap(_tree_util.pytree_select)(
 			done, next_state, start_state
 		)

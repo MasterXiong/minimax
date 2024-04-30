@@ -365,6 +365,7 @@ class PLRRunner(DRRunner):
 		extra=None, 
 		ep_stats=None,
 		plr_buffer=None):
+		# train_state: state related to RL training
 		# If device sharded, load sharded PLR buffer into train state
 		if self.n_devices > 1:
 			rng = jax.random.fold_in(rng, jax.lax.axis_index('device'))
@@ -372,6 +373,7 @@ class PLRRunner(DRRunner):
 
 		# Sample next training levels via PLR
 		rng, *vrngs = jax.random.split(rng, self.n_students+1)
+		# initial observation and state of each parallel env
 		obs, state, extra = self.benv.reset(jnp.array(vrngs), self.n_parallel, 1)
 
 		if self.use_parallel_eval:
