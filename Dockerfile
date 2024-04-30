@@ -46,7 +46,7 @@ COPY . /user/minimax
 WORKDIR /user/minimax
 RUN /bin/bash -c ". activate docker_env; python3 -m pip install --upgrade pip; python3 -m pip install -e ."
 
-# RUN python3 -m pip install --upgrade "jax[cuda11_pip]" -f https://storage.googleapis.com/jax-releases/jax_cuda_releases.html
+RUN python3 -m pip install --upgrade "jax[cuda12_pip]" -f https://storage.googleapis.com/jax-releases/jax_cuda_releases.html
 
 # add new user
 ARG USER_ID
