@@ -283,18 +283,22 @@ class PLRManager:
 
 			score, level, level_idx, done_mask, parent_idx, max_return = step
 
+			# insert at the next empty position if the buffer is not filled yet
+			# otherwise, select the one with the lowest UED score
 			next_insert_idx = self._get_next_insert_idx(plr_buffer)
 			is_new_level = jnp.greater(0, level_idx)
 			insert_idx = jnp.where(
 				is_new_level,
 				next_insert_idx, # new level
 				level_idx,
-			)
+			) # find the correponding index in the buffer if it is not a new level
 
+			# should not insert if the new level's score is below the existing one
 			should_insert = jnp.greater_equal(score, scores.at[insert_idx].get())
 			should_insert = jnp.logical_and(should_insert, done_mask)
 
 			is_existing_level = jnp.logical_and(~is_new_level, done_mask)
+			# should_update: update existing level and it is not updated by a previous level
 			should_update = jnp.logical_and(is_existing_level, ~insert_mask.at[insert_idx].get())
 			should_insert = jnp.logical_and(should_insert, ~should_update)
 			next_insert_mask = jnp.where(

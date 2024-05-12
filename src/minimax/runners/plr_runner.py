@@ -239,10 +239,10 @@ class PLRRunner(DRRunner):
 		ued_scores, ued_score_info = compute_ued_scores(
 			self.ued_score, train_batch, self.n_eval, info=ued_info, ignore_val=-jnp.inf, per_agent=True)
 		next_plr_buffer = self.plr_mgr.update(
-			train_state.plr_buffer, 
-			levels=levels, 
-			level_idxs=level_idxs, 
-			ued_scores=ued_scores,
+			train_state.plr_buffer, # the existing level buffer
+			levels=levels, # levels to be added to the buffer
+			level_idxs=level_idxs, # index of `levels` in `plr_buffer`, -1 if randomly sampled
+			ued_scores=ued_scores, # ued score of `levels`
 			dupe_mask=dupe_mask, 
 			info=ued_score_info, 
 			ignore_val=-jnp.inf,
